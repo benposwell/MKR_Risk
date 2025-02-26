@@ -59,7 +59,10 @@ trading_level_history_df = get_trading_level_history(csv_dataframes)
 trading_level_history_df.sort_values(by=['AsOf'])
 current_trading_level = trading_level_history_df['TradingLevel'].tail(1).tolist()[0]
 
-current_business_date = (datetime.today() - BusinessDays(1)).strftime("%B %d, %Y")
+positions_snapshot_date = positions_snapshot['PositionAsOfDate'].tail(1).tolist()[0]
+
+# current_business_date = (datetime.today() - BusinessDays(1)).strftime("%B %d, %Y")
+current_business_date = positions_snapshot_date
 st.markdown("<h1 style='text-align: center;'>PM Exposure & Performance Summary</h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center;'>Portfolio Manager: MKR</h2>", unsafe_allow_html=True)
 st.markdown(f"<h3 style='text-align: center;'>Trading Level: ${numerize.numerize(current_trading_level)}</h3>", unsafe_allow_html=True)
