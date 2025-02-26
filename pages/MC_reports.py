@@ -1209,7 +1209,7 @@ fig.update_layout(height=500, title_text="Historical IVAR 99% by Sector", yaxis_
                  template='plotly_white', legend_title_text='Sector', yaxis_title=None, xaxis_title=None)
 st.plotly_chart(fig, use_container_width=True)
 
-st.markdown("<h3 style='text-align: center;'>IAA Guidelines Summary</h3>", unsafe_allow_html=True)
+# st.markdown("<h3 style='text-align: center;'>IAA Guidelines Summary</h3>", unsafe_allow_html=True)
 
 margins_df = get_pm_margins(csv_dataframes)
 margins_df['FundName'] = margins_df['map'].apply(lambda x: get_pm_name(x))
@@ -1219,7 +1219,7 @@ historical_margins_df = historical_margins_df['MarginRequirement']
 historical_margins_df.reset_index(inplace=True)
 historical_margins_df['Date'] = pd.to_datetime(historical_margins_df['Date'], format="%Y-%m-%d")
 historical_margins_df.set_index(['Date'], inplace=True)
-#historical_margins_df.to_excel(r"C:\Users\hnair\Documents\Portfolio Construction\Historical_Margins.xlsx")
+# #historical_margins_df.to_excel(r"C:\Users\hnair\Documents\Portfolio Construction\Historical_Margins.xlsx")
 
 margin_pnl_df = pd.pivot_table(pnl_history, values=['MTD', 'DTD'], index=['PeriodEndDate'], aggfunc="sum")
 margin_pnl_df['ITD'] = margin_pnl_df['DTD'].cumsum()
@@ -1233,7 +1233,7 @@ margin_pnl_df.set_index(['Date'], inplace=True)
 margin_pnl_df = pd.merge(margin_pnl_df, historical_margins_df, left_index=True, right_index=True, how='outer')
 margin_pnl_df.rename(columns={'MKR - MAP 240_27': 'Margin'}, inplace=True)
 
-# st.write(margin_pnl_df.index)
+# # st.write(margin_pnl_df.index)
 
 current_margin_val = margin_pnl_df.tail(1)['Margin'].values[0]
 margin_pnl_df['Margin (%)'] = round(margin_pnl_df['Margin']/margin_pnl_df['TradingLevel'], 4)
@@ -1249,55 +1249,55 @@ positions_snapshot['Short Options'] = positions_snapshot.apply(lambda x:get_numb
 positions_snapshot['Ticker'] = positions_snapshot['Investment'].apply(lambda x: str(x).split('_')[0] if pd.notnull(x) else '')
 positions_snapshot['CFTC'] = positions_snapshot.apply(lambda x: get_cftc_spot_month_limit(x['InstrumentName'], x['InstrumentType'], x['Ticker'], x['Quantity']), axis=1)
 
-iaa_limits_path = 'data/IAA_Limits.xlsx'
-iaa_df = pd.read_excel(iaa_limits_path)
-iaa_df = iaa_df[iaa_df['ShortName'] == 'PMAP 240 MKR CAPITAL ']
-iaa_df['Account Limit Type'] = iaa_df.apply(lambda x: get_account_limit_type(x['Description'],x['Limit1Type'], x['Sector'], x['Market']), axis=1)
-iaa_df['Value Type'] = iaa_df.apply(lambda x: get_value_type(x['Description'], x['Limit1Type']), axis=1)
-iaa_df['Value'] = iaa_df.apply(lambda x: get_value_exposure(x['Description'], x['Sector'], x['Market'], x['Value Type'], positions_snapshot, current_margin_val, csv_dataframes), axis=1)
-iaa_df['Limit Value'] = iaa_df.apply(lambda x: get_limit_value(x['Limit1Type'], x['Limit1'], current_trading_level), axis=1)
-iaa_df.fillna(0,inplace=True)
-iaa_df['Satisfy Limit'] = iaa_df.apply(lambda x: satisfy_limit(x['Limit1Type'], x['Value'],x['Limit Value']), axis=1)
-iaa_df['% Limit Usage'] = iaa_df.apply(lambda x: get_limit_usage(x['Value'], x['Limit Value'], x['Limit1Type']), axis=1)
-iaa_df['Value'] = iaa_df['Value'].apply(lambda x: get_currency_format(x))
-iaa_df['Limit Value'] = iaa_df['Limit Value'].apply(lambda x: get_currency_format(x))
-iaa_df['% Limit Usage'] =  iaa_df['% Limit Usage'].apply(lambda x: "{:.2f}%".format(x*100))
-iaa_df['Limit1'] = iaa_df['Limit1'].apply(lambda x: "{:.2f}%".format(x))
-iaa_df.rename(columns={'Limit1': 'Limit', 'Limit1Type': 'Limit Type'}, inplace=True)
-iaa_df['Sector'] = iaa_df['Sector'].apply(lambda x: 'All' if x in ['Market', 'Portfolio'] else x)
-iaa_df['Market'] = iaa_df['Market'].apply(lambda x: 'All' if x in ['Market', 'Portfolio'] else x)
-iaa_df = iaa_df.sort_values(by=['Sector', 'Market'])
-iaa_df = iaa_df[['Sector', 'Market','Account Limit Type', 'Limit', 'Limit Type', 'Limit Value', 'Value', 'Satisfy Limit', '% Limit Usage']]
+# iaa_limits_path = 'data/IAA_Limits.xlsx'
+# iaa_df = pd.read_excel(iaa_limits_path)
+# iaa_df = iaa_df[iaa_df['ShortName'] == 'PMAP 240 MKR CAPITAL ']
+# iaa_df['Account Limit Type'] = iaa_df.apply(lambda x: get_account_limit_type(x['Description'],x['Limit1Type'], x['Sector'], x['Market']), axis=1)
+# iaa_df['Value Type'] = iaa_df.apply(lambda x: get_value_type(x['Description'], x['Limit1Type']), axis=1)
+# iaa_df['Value'] = iaa_df.apply(lambda x: get_value_exposure(x['Description'], x['Sector'], x['Market'], x['Value Type'], positions_snapshot, current_margin_val, csv_dataframes), axis=1)
+# iaa_df['Limit Value'] = iaa_df.apply(lambda x: get_limit_value(x['Limit1Type'], x['Limit1'], current_trading_level), axis=1)
+# iaa_df.fillna(0,inplace=True)
+# iaa_df['Satisfy Limit'] = iaa_df.apply(lambda x: satisfy_limit(x['Limit1Type'], x['Value'],x['Limit Value']), axis=1)
+# iaa_df['% Limit Usage'] = iaa_df.apply(lambda x: get_limit_usage(x['Value'], x['Limit Value'], x['Limit1Type']), axis=1)
+# iaa_df['Value'] = iaa_df['Value'].apply(lambda x: get_currency_format(x))
+# iaa_df['Limit Value'] = iaa_df['Limit Value'].apply(lambda x: get_currency_format(x))
+# iaa_df['% Limit Usage'] =  iaa_df['% Limit Usage'].apply(lambda x: "{:.2f}%".format(x*100))
+# iaa_df['Limit1'] = iaa_df['Limit1'].apply(lambda x: "{:.2f}%".format(x))
+# iaa_df.rename(columns={'Limit1': 'Limit', 'Limit1Type': 'Limit Type'}, inplace=True)
+# iaa_df['Sector'] = iaa_df['Sector'].apply(lambda x: 'All' if x in ['Market', 'Portfolio'] else x)
+# iaa_df['Market'] = iaa_df['Market'].apply(lambda x: 'All' if x in ['Market', 'Portfolio'] else x)
+# iaa_df = iaa_df.sort_values(by=['Sector', 'Market'])
+# iaa_df = iaa_df[['Sector', 'Market','Account Limit Type', 'Limit', 'Limit Type', 'Limit Value', 'Value', 'Satisfy Limit', '% Limit Usage']]
 
-headers = [['','<b>'+c+'</b>'] for c in iaa_df.columns]
-values = []
-for col in iaa_df.columns:
-    values.append(iaa_df[col])
+# headers = [['','<b>'+c+'</b>'] for c in iaa_df.columns]
+# values = []
+# for col in iaa_df.columns:
+#     values.append(iaa_df[col])
 
-topHeaderColor = '#1A3357'
-nextHeaderColor = '#1A9687'
+# topHeaderColor = '#1A3357'
+# nextHeaderColor = '#1A9687'
 
-rowOddColor = '#F2F2F2'
-rowEvenColor = '#FFFFFF'
-fig = go.Figure(
-    go.Table(
-        header=dict(values=headers,
-                    line = dict(width=0),
-                   fill_color=[[topHeaderColor, nextHeaderColor]*6],
-                    align='center',
-                    font=dict(family="Aptos Narrow", color="white", size=14)
-                   ),
-        cells=dict(values=values,
-                   line = dict(width=0),
-                  align='center',
-                  font=dict(family="Segoe UI", color="black", size=12),
-                  fill_color = [[rowOddColor, rowEvenColor,rowOddColor, rowEvenColor,rowOddColor, rowEvenColor]*6,
-                               ],
-                  height=30)
-    )
-)
-fig.update_layout(height=700)
-st.plotly_chart(fig, use_container_width=True)
+# rowOddColor = '#F2F2F2'
+# rowEvenColor = '#FFFFFF'
+# fig = go.Figure(
+#     go.Table(
+#         header=dict(values=headers,
+#                     line = dict(width=0),
+#                    fill_color=[[topHeaderColor, nextHeaderColor]*6],
+#                     align='center',
+#                     font=dict(family="Aptos Narrow", color="white", size=14)
+#                    ),
+#         cells=dict(values=values,
+#                    line = dict(width=0),
+#                   align='center',
+#                   font=dict(family="Segoe UI", color="black", size=12),
+#                   fill_color = [[rowOddColor, rowEvenColor,rowOddColor, rowEvenColor,rowOddColor, rowEvenColor]*6,
+#                                ],
+#                   height=30)
+#     )
+# )
+# fig.update_layout(height=700)
+# st.plotly_chart(fig, use_container_width=True)
 
 df = liquidity_limits_check(positions_snapshot, csv_dataframes['LiqLimits.csv'])
 df = df.groupby(df['BBG Ticker']).agg({'InstrumentName': ', '.join,
