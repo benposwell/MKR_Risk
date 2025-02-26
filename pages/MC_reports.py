@@ -65,6 +65,12 @@ st.markdown("<h2 style='text-align: center;'>Portfolio Manager: MKR</h2>", unsaf
 st.markdown(f"<h3 style='text-align: center;'>Trading Level: ${numerize.numerize(current_trading_level)}</h3>", unsafe_allow_html=True)
 st.markdown(f"<h3 style='text-align: center;'>As of: {current_business_date}</h3>", unsafe_allow_html=True)
 
+# Create refresh button which reruns load_all_csvs_to_dataframe
+refresh_button = st.button("Refresh", use_container_width=True)
+if refresh_button:
+    st.cache_data.clear()
+    csv_dataframes = load_all_csvs_to_dataframe('Risk_Raw_Data')
+
 exposure_summary = pd.pivot_table(positions_snapshot, 
                                values=['Gross Exposure', 'Net Exposure', 'MSCIBeta1d1Y', 'IR_Pos1bp_PNL'], 
                                index=['Sector'], aggfunc="sum")
