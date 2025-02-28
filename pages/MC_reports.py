@@ -18,8 +18,53 @@ pd.options.display.float_format = '{:.4f}'.format
 
 
 # st.set_page_config(layout="wide")
+st.divider()
+
+def check_all_csvs_exist(csv_dataframes):
+    sample_list = ['MKR_MC_PNL', 'MKR_MC_POSITIONS', 'MKR_MC_VAR', 'MKR_PNL_History', 'MKR_Positions_History', 'MKR_VAR_History', 'Trading_Level', 'Margins', 'LiqLimits', 'Daily_Returns', 'Benchmarks']
+    retrieved_list = csv_dataframes.keys()
+    for key in sample_list:
+        if not any(key in retrieved_key for retrieved_key in retrieved_list):
+            return False
+    return True
+
+def check_up_to_date(csv_dataframes):
+    retrieved_list = csv_dataframes.keys()
+    # Get yesterdays date in form YYYYMMDD
+    yesterday = (datetime.today() - timedelta(days=1)).strftime('%Y%m%d')
+    for key in retrieved_list:
+        if "MKR_MC_POSITIONS" in key:
+            if yesterday not in key:
+                date_part = key.split('_')[6]
+                try:
+                    formatted_date = (datetime.strptime(date_part, '%Y%m%d') - timedelta(days=1)).strftime('%B %d, %Y')
+                    st.warning("Warning - Positions file is of date: " + formatted_date)
+                except ValueError:
+                    st.warning("Warning - Positions file is of date: " + key)
+        if "MKR_MC_PNL" in key:
+            if yesterday not in key:
+                date_part = key.split('_')[6]
+                try:
+                    formatted_date = (datetime.strptime(date_part, '%Y%m%d') - timedelta(days=1)).strftime('%B %d, %Y')
+                    st.warning("Warning - P&L file is of date: " + formatted_date)
+                except ValueError:
+                    st.warning("Warning - P&L file is of date: " + key)
+        if "MKR_MC_VAR" in key:
+            if yesterday not in key:
+                date_part = key.split('_')[6]
+                try:
+                    formatted_date = (datetime.strptime(date_part, '%Y%m%d') - timedelta(days=1)).strftime('%B %d, %Y')
+                    st.warning("Warning - VAR file is of date: " + formatted_date)
+                except ValueError:
+                    st.warning("Warning - VAR file is of date: " + key)
 
 csv_dataframes = load_all_csvs_to_dataframe('Risk_Raw_Data')
+
+if not check_all_csvs_exist(csv_dataframes):
+    st.cache_data.clear()
+    csv_dataframes = load_all_csvs_to_dataframe('Risk_Raw_Data')
+
+check_up_to_date(csv_dataframes)
 
 if csv_dataframes:
     positions_history = csv_dataframes['MKR_Positions_History.csv']
@@ -64,9 +109,9 @@ positions_snapshot_date = positions_snapshot['PositionAsOfDate'].tail(1).tolist(
 # current_business_date = (datetime.today() - BusinessDays(1)).strftime("%B %d, %Y")
 current_business_date = positions_snapshot_date
 st.markdown("<h1 style='text-align: center;'>PM Exposure & Performance Summary</h1>", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center;'>Portfolio Manager: MKR</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>Portfolio Manager: MKR Capital</h2>", unsafe_allow_html=True)
 st.markdown(f"<h3 style='text-align: center;'>Trading Level: ${numerize.numerize(current_trading_level)}</h3>", unsafe_allow_html=True)
-st.markdown(f"<h3 style='text-align: center;'>As of: {current_business_date}</h3>", unsafe_allow_html=True)
+st.markdown(f"<h3 style='text-align: center;'>Positions as of EOD: {datetime.strptime(current_business_date, '%Y-%m-%d').strftime('%B %d, %Y')}</h3>", unsafe_allow_html=True)
 
 # Create refresh button which reruns load_all_csvs_to_dataframe
 refresh_button = st.button("Refresh", use_container_width=True)
