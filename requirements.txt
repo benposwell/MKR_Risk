@@ -7,4 +7,3 @@ st_pages
 openpyxl
 numerize
 requests
-json
