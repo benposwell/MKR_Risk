@@ -95,8 +95,6 @@ try:
     else:
         st.warning("No CSV files found in the bucket.")
 
-    st.write(var_snapshot)
-
     # Code from Plotting IPYNB
     var_snapshot['Sector'] = var_snapshot['Sector'].apply(lambda x: 'Cash' if x == 'Inflation' else x)
     positions_snapshot['Sector'] = positions_snapshot.apply(lambda x: 'Equity' if x['Market'] == 'VIX' else x['Sector'], axis=1)
@@ -471,8 +469,6 @@ try:
 
 
     # IVAR By Sector
-    st.write(ivar_sector_summary)
-    st.write(var_snapshot)
     fig.add_trace(go.Histogram(
         x=ivar_sector_summary.index.values,
         y=ivar_sector_summary['IVaR_Hist_95 %'],
@@ -851,7 +847,6 @@ try:
     st.markdown("<h2 style='text-align: center;'>Historical Summary</h2>", unsafe_allow_html=True)
 
     st.markdown("<h3 style='text-align: center;'>Historical Cumulative Performance Summary</h3>", unsafe_allow_html=True)
-    # st.write count of the types of the PeriodEndDate column in pnl_history
     pnl_history['PeriodEndDate'] = pnl_history['PeriodEndDate'].apply(standardize_dates)
     pnl_aggregate_history = pd.pivot_table(pnl_history, values=['MTD', 'DTD'], index=['PeriodEndDate'], aggfunc="sum")
     pnl_aggregate_history['ITD'] = pnl_aggregate_history['DTD'].cumsum()
@@ -1298,7 +1293,6 @@ try:
     margin_pnl_df = pd.merge(margin_pnl_df, historical_margins_df, left_index=True, right_index=True, how='outer')
     margin_pnl_df.rename(columns={'MKR - MAP 240_27': 'Margin'}, inplace=True)
 
-    # # st.write(margin_pnl_df.index)
 
     current_margin_val = margin_pnl_df.tail(1)['Margin'].values[0]
     margin_pnl_df['Margin (%)'] = round(margin_pnl_df['Margin']/margin_pnl_df['TradingLevel'], 4)
