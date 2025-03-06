@@ -71,7 +71,6 @@ if not check_all_csvs_exist(csv_dataframes):
 
 check_up_to_date(csv_dataframes)
 
-
 try:
     if csv_dataframes:
         positions_history = csv_dataframes['MKR_Positions_History.csv']
@@ -96,6 +95,7 @@ try:
     else:
         st.warning("No CSV files found in the bucket.")
 
+    st.write(var_snapshot)
 
     # Code from Plotting IPYNB
     var_snapshot['Sector'] = var_snapshot['Sector'].apply(lambda x: 'Cash' if x == 'Inflation' else x)
@@ -125,6 +125,8 @@ try:
     if refresh_button:
         st.cache_data.clear()
         csv_dataframes = load_all_csvs_to_dataframe('Risk_Raw_Data')
+        # Refresh the page
+        st.rerun()
 
     exposure_summary = pd.pivot_table(positions_snapshot, 
                                 values=['Gross Exposure', 'Net Exposure', 'MSCIBeta1d1Y', 'IR_Pos1bp_PNL'], 
@@ -469,6 +471,8 @@ try:
 
 
     # IVAR By Sector
+    st.write(ivar_sector_summary)
+    st.write(var_snapshot)
     fig.add_trace(go.Histogram(
         x=ivar_sector_summary.index.values,
         y=ivar_sector_summary['IVaR_Hist_95 %'],
@@ -1439,4 +1443,5 @@ try:
     # st.plotly_chart(fig, use_container_width=True)
 except Exception as e:
     st.error("Error Processing PM Report Visualisations - Admin has been notified")
-    send_teams_message(f"Error processing PM Report Visualisations - {e}")
+    print(e)
+    # send_teams_message(f"Error processing PM Report Visualisations - {e}")
