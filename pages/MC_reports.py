@@ -32,7 +32,9 @@ def check_all_csvs_exist(csv_dataframes):
 def check_up_to_date(csv_dataframes):
     retrieved_list = csv_dataframes.keys()
     # Get yesterdays date in form YYYYMMDD
-    yesterday = (datetime.today() - timedelta(days=1)).strftime('%Y%m%d')
+    # Convert to AEDT (UTC+11)
+    aedt_offset = timedelta(hours=11)
+    yesterday = (datetime.utcnow() + aedt_offset - timedelta(days=1)).strftime('%Y%m%d')
     for key in retrieved_list:
         if "MKR_MC_POSITIONS" in key:
             if yesterday not in key:
